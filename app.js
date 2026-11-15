@@ -1,6 +1,9 @@
 import * as ort from "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ort.min.mjs";
 
 const MODEL_URL = "https://huggingface.co/StemSplitio/htdemucs-onnx/resolve/main/htdemucs_fp16weights.onnx";
+const MODEL_DB = "stemlab-model-storage";
+const MODEL_STORE = "models";
+const MODEL_KEY = "htdemucs-fp16-v1";
 const SAMPLE_RATE = 44100;
 const SEGMENT_SECONDS = 7.8;
 const SEGMENT_SAMPLES = Math.round(SEGMENT_SECONDS * SAMPLE_RATE);
@@ -35,6 +38,103 @@ let decodedAudio = null;
 let audioContext = null;
 let session = null;
 let resultUrls = [];
+
+function openModelDatabase() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(MODEL_DB, 1);
+    request.onupgradeneeded = () => {
+      if (!request.result.objectStoreNames.contains(MODEL_STORE)) {
+        request.result.createObjectStore(MODEL_STORE);
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error || new Error("Could not open browser storage."));
+  });
+}
+
+async function readSavedModel() {
+  const db = await openModelDatabase();
+  return new Promise((resolve, reject) => {
+    const request = db.transaction(MODEL_STORE, "readonly").objectStore(MODEL_STORE).get(MODEL_KEY);
+    request.onsuccess = () => { db.close(); resolve(request.result || null); };
+    request.onerror = () => { db.close(); reject(request.error); };
+  });
+}
+
+async function saveModel(modelBytes) {
+  const db = await openModelDatabase();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(MODEL_STORE, "readwrite");
+    transaction.objectStore(MODEL_STORE).put(modelBytes, MODEL_KEY);
+    transaction.oncomplete = () => { db.close(); resolve(); };
+    transaction.onerror = () => { db.close(); reject(transaction.error || new Error("Could not save model in browser storage.")); };
+    transaction.onabort = () => { db.close(); reject(transaction.error || new Error("Saving the model was cancelled.")); };
+  });
+}
+
+async function downloadAndStoreModel() {
+  const response = await fetch(MODEL_URL);
+  if (!response.ok) throw new Error("Model download failed (HTTP " + response.status + ").");
+  const total = Number(response.headers.get("content-length")) || 0;
+  let received = 0;
+  const chunks = [];
+  if (response.body && response.body.getReader) {
+    const reader = response.body.getReader();
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+      received += value.byteLength;
+      const percent = total ? Math.min(94, 4 + received / total * 90) : 0;
+      setStatus("Downloading HTDemucs model", formatBytes(received) + (total ? " of " + formatBytes(total) : " downloaded"), percent);
+    }
+  } else {
+    const buffer = await response.arrayBuffer();
+    chunks.push(new Uint8Array(buffer));
+    received = buffer.byteLength;
+  }
+  const combined = new Uint8Array(received);
+  let offset = 0;
+  for (const chunk of chunks) { combined.set(chunk, offset); offset += chunk.byteLength; }
+  const bytes = combined.buffer;
+  await saveModel(bytes);
+  $("model-storage-status").textContent = "Saved in this browser";
+  $("model-download-button").textContent = "✓ Model saved";
+  return bytes;
+}
+
+async function getModelBytes() {
+  const saved = await readSavedModel();
+  if (saved) {
+    $("model-storage-status").textContent = "Saved in this browser";
+    $("model-download-button").textContent = "✓ Model saved";
+    return saved;
+  }
+  return downloadAndStoreModel();
+}
+
+async function downloadModelToBrowser() {
+  const button = $("model-download-button");
+  button.disabled = true;
+  progressPanel.classList.remove("hidden");
+  errorBox.classList.add("hidden");
+  try {
+    const saved = await readSavedModel();
+    if (saved) {
+      $("model-storage-status").textContent = "Saved in this browser";
+      setStatus("Model already saved", "HTDemucs is stored in this browser. You can use it without downloading again.", 100);
+      button.textContent = "✓ Model saved";
+      return;
+    }
+    setStatus("Preparing model download", "The model will be stored in this browser's IndexedDB, not in your Downloads folder.", 2);
+    await downloadAndStoreModel();
+    setStatus("Model saved", "HTDemucs is now stored in this browser and ready to use.", 100);
+  } catch (error) {
+    showError("Could not save the model: " + (error.message || error) + " Check your connection and browser storage space.");
+  } finally {
+    button.disabled = false;
+  }
+}
 
 function setStatus(title, detail, percent) {
   progressTitle.textContent = title;
@@ -259,9 +359,10 @@ async function separate() {
 
   try {
     if (!session) {
-      setStatus("Loading HTDemucs AI model", "Downloading the model (about 166 MB). It will be cached by your browser.", 3);
+      setStatus("Loading HTDemucs AI model", "Checking browser storage for the saved model…", 3);
+      const modelBytes = await getModelBytes();
       ort.env.wasm.numThreads = Math.max(1, Math.min(navigator.hardwareConcurrency || 2, 4));
-      session = await ort.InferenceSession.create(MODEL_URL, {
+      session = await ort.InferenceSession.create(modelBytes, {
         executionProviders: ["wasm"],
         graphOptimizationLevel: "all"
       });
@@ -281,6 +382,16 @@ async function separate() {
     buttonLabel.textContent = "Separate audio";
   }
 }
+
+$("model-download-button").addEventListener("click", downloadModelToBrowser);
+readSavedModel().then((saved) => {
+  if (saved) {
+    $("model-storage-status").textContent = "Saved in this browser";
+    $("model-download-button").textContent = "✓ Model saved";
+  }
+}).catch(() => {
+  $("model-storage-status").textContent = "Browser storage unavailable";
+});
 
 $("browse-button").addEventListener("click", () => fileInput.click());
 dropZone.addEventListener("click", (event) => {
