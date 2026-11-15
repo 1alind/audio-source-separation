@@ -99,8 +99,6 @@ async function downloadAndStoreModel() {
   for (const chunk of chunks) { combined.set(chunk, offset); offset += chunk.byteLength; }
   const bytes = combined.buffer;
   await saveModel(bytes);
-  $("model-storage-status").textContent = "Saved in this browser";
-  $("model-download-button").textContent = "✓ Model saved";
   return bytes;
 }
 
