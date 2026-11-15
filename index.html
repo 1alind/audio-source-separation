@@ -30,13 +30,13 @@
 
     <section class="workspace" aria-label="Audio separation workspace">
       <div class="upload-card" id="drop-zone">
-        <input id="audio-file" type="file" accept="audio/*,.mp3,.wav,.flac,.m4a,.ogg,.aac" hidden>
+        <input id="audio-file" class="file-input" type="file" accept="audio/*,.mp3,.wav,.flac,.m4a,.ogg,.aac">
         <div class="upload-content" id="upload-content">
           <div class="upload-icon">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M4 15.5v3A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5v-3"/></svg>
           </div>
           <h2>Drop your audio here</h2>
-          <p>or <button class="text-button" id="browse-button" type="button">browse files</button></p>
+          <p>or <label class="text-button" for="audio-file">browse files</label></p>
           <div class="file-types">MP3 · WAV · FLAC · M4A · OGG</div>
         </div>
         <div class="selected-file hidden" id="selected-file">
