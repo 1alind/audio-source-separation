@@ -388,16 +388,6 @@ async function separate() {
   }
 }
 
-$("model-download-button").addEventListener("click", downloadModelToBrowser);
-readSavedModel().then((saved) => {
-  if (saved) {
-    $("model-storage-status").textContent = "Saved in this browser";
-    $("model-download-button").textContent = "✓ Model saved";
-  }
-}).catch(() => {
-  $("model-storage-status").textContent = "Browser storage unavailable";
-});
-
 $("browse-button").addEventListener("click", () => fileInput.click());
 dropZone.addEventListener("click", (event) => {
   if (event.target.closest("button")) return;
