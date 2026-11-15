@@ -1,4 +1,5 @@
-import * as ort from "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ort.min.mjs";
+let ort = null;
+const ORT_URL = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ort.min.mjs";
 
 const MODEL_URL = "https://huggingface.co/StemSplitio/htdemucs-onnx/resolve/main/htdemucs_fp16weights.onnx";
 const MODEL_DB = "stemlab-model-storage";
@@ -358,6 +359,10 @@ async function separate() {
   clearResults();
 
   try {
+    if (!ort) {
+      setStatus("Loading AI engine", "Preparing the browser inference engine…", 1);
+      ort = await import(ORT_URL);
+    }
     if (!session) {
       setStatus("Loading HTDemucs AI model", "Checking browser storage for the saved model…", 3);
       const modelBytes = await getModelBytes();
