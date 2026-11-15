@@ -386,9 +386,8 @@ async function separate() {
   }
 }
 
-$("browse-button").addEventListener("click", () => fileInput.click());
 dropZone.addEventListener("click", (event) => {
-  if (event.target.closest("button")) return;
+  if (event.target.closest("button, label, input")) return;
   if (!selectedAudioFile) fileInput.click();
 });
 fileInput.addEventListener("change", () => loadAudio(fileInput.files && fileInput.files[0]));
