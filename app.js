@@ -1,5 +1,5 @@
 let ortRuntime = null;
-const ORT_URL = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ortRuntime.min.js";
+const ORT_URL = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ort.min.js";
 let ortLoadPromise = null;
 
 function loadOrtRuntime() {
