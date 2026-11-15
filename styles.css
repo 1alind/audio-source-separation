@@ -29,3 +29,7 @@ footer{max-width:1120px;margin:auto;padding:22px 28px 28px;border-top:1px solid 
 .hidden{display:none!important}
 @keyframes pulse{50%{box-shadow:0 0 0 7px #b7f36b08;opacity:.7}}
 @media(max-width:600px){.topbar{height:64px;padding:0 20px}.shell{width:calc(100% - 28px)}.hero{padding:58px 0 32px}h1{letter-spacing:-3px}.hero-copy{font-size:13px;padding:0 8px}.workspace{padding:14px;border-radius:15px}.upload-card{min-height:185px}.model-row{align-items:flex-start;flex-direction:column;gap:10px;padding:17px 2px}.model-actions{width:100%;justify-content:space-between;flex-wrap:wrap}.model-download-area{align-items:flex-start}.button-arrow{right:30px}.stem-grid{grid-template-columns:1fr}.results{padding-top:48px}.results-heading h2{font-size:25px}.how-it-works{grid-template-columns:1fr;gap:17px;padding:40px 4px 48px}footer{padding:19px 18px;flex-direction:column;gap:8px}.privacy{font-size:10px}}
+
+.file-input{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.text-button{display:inline;cursor:pointer}
+.text-button:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:3px}
