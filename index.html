@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0d12">
+  <meta name="description" content="Separate vocals, drums, bass and instruments from music directly in your browser. Your audio stays on your device.">
+  <title>StemLab · Audio Source Separation</title>
+  <link rel="preconnect" href="https://huggingface.co">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="StemLab home">
+      <span class="brand-mark"><span></span><span></span><span></span><span></span></span>
+      <span>stem<span class="brand-light">lab</span></span>
+    </a>
+    <div class="privacy"><span class="privacy-dot"></span> Runs on your device</div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow"><span class="eyebrow-line"></span> AI AUDIO WORKSPACE</div>
+      <h1>Every layer.<br><span>On its own.</span></h1>
+      <p class="hero-copy">Split a song into vocals, drums, bass and instruments with HTDemucs AI. No uploads. No server. Just your browser doing the work.</p>
+    </section>
+
+    <section class="workspace" aria-label="Audio separation workspace">
+      <div class="upload-card" id="drop-zone">
+        <input id="audio-file" type="file" accept="audio/*,.mp3,.wav,.flac,.m4a,.ogg,.aac" hidden>
+        <div class="upload-content" id="upload-content">
+          <div class="upload-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M4 15.5v3A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5v-3"/></svg>
+          </div>
+          <h2>Drop your audio here</h2>
+          <p>or <button class="text-button" id="browse-button" type="button">browse files</button></p>
+          <div class="file-types">MP3 · WAV · FLAC · M4A · OGG</div>
+        </div>
+        <div class="selected-file hidden" id="selected-file">
+          <div class="file-icon">♫</div>
+          <div class="file-info">
+            <strong id="file-name">audio.mp3</strong>
+            <span id="file-meta">Ready to separate</span>
+          </div>
+          <button class="icon-button" id="remove-file" type="button" aria-label="Remove audio">×</button>
+        </div>
+      </div>
+
+      <div class="model-row">
+        <div class="model-info">
+          <span class="model-label">SEPARATION MODEL</span>
+          <strong>HTDemucs · 4 stems</strong>
+        </div>
+        <div class="model-size"><span class="tiny-dot"></span> First download: about 166 MB</div>
+      </div>
+
+      <button class="separate-button" id="separate-button" type="button" disabled>
+        <span class="button-spark">✳</span>
+        <span id="button-label">Separate audio</span>
+        <span class="button-arrow">↗</span>
+      </button>
+
+      <div class="progress-panel hidden" id="progress-panel">
+        <div class="progress-heading">
+          <div><span class="working-pulse"></span><strong id="progress-title">Preparing AI model</strong></div>
+          <span id="progress-percent">0%</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+        <p id="progress-detail">The model is loaded once and reused while this page stays open.</p>
+      </div>
+
+      <div class="error-box hidden" id="error-box" role="alert"></div>
+      <p class="privacy-note"><span>⌑</span> Your audio is processed locally. Only the AI model is downloaded from Hugging Face.</p>
+    </section>
+
+    <section class="results hidden" id="results">
+      <div class="results-heading">
+        <div>
+          <div class="eyebrow"><span class="eyebrow-line"></span> YOUR SEPARATED TRACKS</div>
+          <h2>The stems are ready.</h2>
+        </div>
+        <button class="reset-button" id="new-audio" type="button">＋ New audio</button>
+      </div>
+      <div class="stem-grid" id="stem-grid"></div>
+      <p class="results-footnote">Each track is a WAV file. Separation quality depends on the mix; a little bleed between instruments can happen.</p>
+    </section>
+
+    <section class="how-it-works">
+      <div class="how-item"><span class="how-number">01</span><div><strong>Choose a track</strong><p>Pick an audio file from your device.</p></div></div>
+      <div class="how-item"><span class="how-number">02</span><div><strong>Let AI separate it</strong><p>HTDemucs analyzes the music in short overlapping sections.</p></div></div>
+      <div class="how-item"><span class="how-number">03</span><div><strong>Listen and download</strong><p>Preview each stem and save the tracks you need.</p></div></div>
+    </section>
+  </main>
+
+  <footer><span>STEMLAB</span><span>Powered by HTDemucs ONNX · Open-source model</span></footer>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
