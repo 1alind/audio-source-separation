@@ -414,6 +414,24 @@ $("new-audio").addEventListener("click", () => {
 });
 separateButton.addEventListener("click", separate);
 
+async function loadDefaultTestAudio() {
+  try {
+    const response = await fetch("./test.mp3", { cache: "no-store" });
+    if (!response.ok) throw new Error("HTTP " + response.status);
+    const blob = await response.blob();
+    if (blob.size < 1024) {
+      showError("The default test.mp3 file is empty or invalid (" + blob.size + " bytes). Replace test.mp3 in the repository with a real audio file.");
+      return;
+    }
+    const file = new File([blob], "test.mp3", { type: "audio/mpeg", lastModified: Date.now() });
+    await loadAudio(file);
+  } catch (error) {
+    showError("Could not load the default test.mp3 file: " + (error.message || error));
+  }
+}
+
+
+
 ["dragenter", "dragover"].forEach((eventName) => {
   dropZone.addEventListener(eventName, (event) => {
     event.preventDefault();
@@ -430,5 +448,7 @@ dropZone.addEventListener("drop", (event) => {
   const file = event.dataTransfer && event.dataTransfer.files[0];
   if (file) loadAudio(file);
 });
+
+window.addEventListener("DOMContentLoaded", loadDefaultTestAudio, { once: true });
 
 })();
