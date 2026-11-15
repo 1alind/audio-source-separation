@@ -1,16 +1,16 @@
-let ort = null;
-const ORT_URL = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ort.min.js";
+let ortRuntime = null;
+const ORT_URL = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ortRuntime.min.js";
 let ortLoadPromise = null;
 
 function loadOrtRuntime() {
-  if (window.ort) return Promise.resolve(window.ort);
+  if (window.ortRuntime) return Promise.resolve(window.ortRuntime);
   if (ortLoadPromise) return ortLoadPromise;
   ortLoadPromise = new Promise((resolve, reject) => {
     const script = document.createElement("script");
     script.src = ORT_URL;
     script.async = true;
-    script.onload = () => window.ort
-      ? resolve(window.ort)
+    script.onload = () => window.ortRuntime
+      ? resolve(window.ortRuntime)
       : reject(new Error("ONNX Runtime loaded but did not initialize."));
     script.onerror = () => reject(new Error("Could not load ONNX Runtime from jsDelivr. Check your connection or try another browser."));
     document.head.appendChild(script);
@@ -282,7 +282,7 @@ async function runSeparation(mix) {
         .set(mix[channel].subarray(start, end));
     }
 
-    const tensor = new ort.Tensor("float32", chunkBuffer, [1, CHANNELS, SEGMENT_SAMPLES]);
+    const tensor = new ortRuntime.Tensor("float32", chunkBuffer, [1, CHANNELS, SEGMENT_SAMPLES]);
     const result = await session.run({ mix: tensor });
     const data = result.stems.data;
     const rowSize = CHANNELS * SEGMENT_SAMPLES;
@@ -370,15 +370,15 @@ async function separate() {
   clearResults();
 
   try {
-    if (!ort) {
+    if (!ortRuntime) {
       setStatus("Loading AI engine", "Preparing the browser inference engine…", 1);
-      ort = await loadOrtRuntime();
+      ortRuntime = await loadOrtRuntime();
     }
     if (!session) {
       setStatus("Loading HTDemucs AI model", "Checking browser storage for the saved model…", 3);
       const modelBytes = await getModelBytes();
-      ort.env.wasm.numThreads = Math.max(1, Math.min(navigator.hardwareConcurrency || 2, 4));
-      session = await ort.InferenceSession.create(modelBytes, {
+      ortRuntime.env.wasm.numThreads = Math.max(1, Math.min(navigator.hardwareConcurrency || 2, 4));
+      session = await ortRuntime.InferenceSession.create(modelBytes, {
         executionProviders: ["wasm"],
         graphOptimizationLevel: "all"
       });
