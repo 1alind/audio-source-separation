@@ -3,14 +3,14 @@ const ORT_URL = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ortRun
 let ortLoadPromise = null;
 
 function loadOrtRuntime() {
-  if (window.ortRuntime) return Promise.resolve(window.ortRuntime);
+  if (window.ort) return Promise.resolve(window.ort);
   if (ortLoadPromise) return ortLoadPromise;
   ortLoadPromise = new Promise((resolve, reject) => {
     const script = document.createElement("script");
     script.src = ORT_URL;
     script.async = true;
-    script.onload = () => window.ortRuntime
-      ? resolve(window.ortRuntime)
+    script.onload = () => window.ort
+      ? resolve(window.ort)
       : reject(new Error("ONNX Runtime loaded but did not initialize."));
     script.onerror = () => reject(new Error("Could not load ONNX Runtime from jsDelivr. Check your connection or try another browser."));
     document.head.appendChild(script);
