@@ -1,3 +1,6 @@
+(function () {
+"use strict";
+
 let ortRuntime = null;
 const ORT_URL = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ort.min.js";
 let ortLoadPromise = null;
@@ -427,3 +430,5 @@ dropZone.addEventListener("drop", (event) => {
   const file = event.dataTransfer && event.dataTransfer.files[0];
   if (file) loadAudio(file);
 });
+
+})();
