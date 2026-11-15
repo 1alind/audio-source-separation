@@ -104,11 +104,7 @@ async function downloadAndStoreModel() {
 
 async function getModelBytes() {
   const saved = await readSavedModel();
-  if (saved) {
-    $("model-storage-status").textContent = "Saved in this browser";
-    $("model-download-button").textContent = "✓ Model saved";
-    return saved;
-  }
+  if (saved) return saved;
   return downloadAndStoreModel();
 }
 
