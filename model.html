@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0d12">
+  <title>Model Storage · StemLab</title>
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+    .model-page{max-width:720px;margin:0 auto;padding:68px 20px 90px;position:relative;z-index:1}
+    .model-panel{background:linear-gradient(145deg,rgba(22,28,38,.96),rgba(15,19,27,.98));border:1px solid #293240;border-radius:18px;padding:25px;margin-top:25px}
+    .model-page h1{font-size:clamp(38px,7vw,58px);letter-spacing:-2.5px;margin:18px 0 12px}
+    .model-page .intro{color:#9ba5b4;line-height:1.7;font-size:14px}
+    .storage-state{display:flex;align-items:center;gap:12px;padding:15px;border:1px solid #303b49;border-radius:11px;background:#0c1118;margin:22px 0}
+    .state-dot{width:10px;height:10px;border-radius:50%;background:#8993a4;flex:none}
+    .state-dot.good{background:#b7f36b;box-shadow:0 0 12px #b7f36b80}
+    .state-copy{display:flex;flex-direction:column;gap:4px}.state-copy strong{font-size:13px}.state-copy span{font-size:11px;color:#8993a4}
+    .model-action{width:100%;height:52px;border:0;border-radius:10px;background:#b7f36b;color:#10150b;font-size:14px;font-weight:800;cursor:pointer}
+    .model-action:disabled{opacity:.5;cursor:wait}
+    .model-progress{margin-top:22px}.progress-meta{display:flex;justify-content:space-between;gap:10px;font-size:12px;margin-bottom:10px}.progress-meta span:last-child{color:#b7f36b;font-variant-numeric:tabular-nums}
+    .bar{height:9px;background:#252d39;border-radius:20px;overflow:hidden}.bar-fill{height:100%;width:0;background:#b7f36b;border-radius:20px;transition:width .15s}
+    .model-detail{color:#8993a4;font-size:11px;line-height:1.6;margin:10px 0 0;overflow-wrap:anywhere}
+    .model-error{padding:13px;border:1px solid #713c42;background:#351d23;color:#ffc1c5;border-radius:9px;font-size:12px;line-height:1.6;margin-top:17px;overflow-wrap:anywhere}
+    .model-actions-bottom{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:20px}
+    .back-link{color:#b7f36b;text-decoration:none;font-size:12px}
+    .small-note{font-size:10px;color:#778292;line-height:1.6;margin-top:20px}
+    @media(max-width:600px){.model-page{padding:48px 14px}.model-panel{padding:17px}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./"><span class="brand-mark"><span></span><span></span><span></span><span></span></span><span>stem<span class="brand-light">lab</span></span></a>
+    <div class="privacy"><span class="privacy-dot"></span> Browser storage</div>
+  </header>
+  <main class="model-page">
+    <div class="eyebrow"><span class="eyebrow-line"></span> MODEL MANAGER</div>
+    <h1>Prepare your<br><span style="color:#b7f36b">AI model.</span></h1>
+    <p class="intro">Download HTDemucs once and save it in this browser. The model stays on this device and can be reused by StemLab without downloading it again.</p>
+    <section class="model-panel">
+      <div class="model-info">
+        <span class="model-label">HTDEMUCS · ONNX · FP16</span>
+        <strong>Model size: approximately 166 MB</strong>
+      </div>
+      <div class="storage-state">
+        <span class="state-dot" id="state-dot"></span>
+        <div class="state-copy"><strong id="state-title">Checking browser storage…</strong><span id="state-subtitle">Looking for a previously saved model.</span></div>
+      </div>
+      <button class="model-action" id="download-button" type="button" disabled>Checking storage…</button>
+      <div class="model-progress">
+        <div class="progress-meta"><span id="progress-title">Waiting</span><span id="progress-percent">0%</span></div>
+        <div class="bar"><div class="bar-fill" id="progress-fill"></div></div>
+        <p class="model-detail" id="progress-detail">The download has not started.</p>
+      </div>
+      <div class="model-error" id="error-box" hidden></div>
+      <div class="model-actions-bottom"><a class="back-link" href="./">← Back to StemLab</a><span class="model-size">Saved locally in this browser</span></div>
+      <p class="small-note">Keep this page open until saving finishes. Clearing this website's browser data may delete the saved model. Your audio files are not uploaded.</p>
+    </section>
+  </main>
+  <script src="./model.js" defer></script>
+</body>
+</html>
